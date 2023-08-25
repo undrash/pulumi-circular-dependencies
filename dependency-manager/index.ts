@@ -35,8 +35,12 @@ export const getDependency = ({
 }: {
   stack: Stack;
   property: string;
-  dummyValueType: DummyValueType;
+  dummyValueType?: DummyValueType;
 }) => {
+  if (!dummyValueType) {
+    dummyValueType = DummyValueType.STRING;
+  }
+
   if (!stackExists(stack)) {
     pulumi.log.warn(
       `Stack ${stack} does not exist. Using dummy value '${dummyValueType}' for deployment.`,
