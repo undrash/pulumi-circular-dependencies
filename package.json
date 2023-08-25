@@ -1,0 +1,14 @@
+{
+    "name": "dependencies-1",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^16"
+    },
+    "dependencies": {
+        "@live/core": "^0.0.20",
+        "@live/functionbeat": "^1.1.0",
+        "@pulumi/aws": "^5.0.0",
+        "@pulumi/awsx": "^1.0.0",
+        "@pulumi/pulumi": "^3.0.0"
+    }
+}

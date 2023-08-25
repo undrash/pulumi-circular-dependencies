@@ -1,0 +1,3 @@
+name: dependencies-1
+runtime: nodejs
+description: A minimal AWS TypeScript Pulumi program
