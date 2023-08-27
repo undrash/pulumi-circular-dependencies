@@ -33,13 +33,15 @@ const deployStack = (dir, stackName) => {
   deployedStacks.push(stackName);
 
   // Extract stack dependencies from the warning messages
-  const stackDependencies = [];
+  const stackDependencySet = new Set();
   const warningPattern =
     /warning: Stack '(.+)' dependency '(.+)' could not be resolved./g;
   let match;
   while ((match = warningPattern.exec(pulumiUpOutput)) !== null) {
-    stackDependencies.push(match[1]);
+    stackDependencySet.add(match[1]);
   }
+
+  const stackDependencies = Array.from(stackDependencySet);
 
   console.log(
     `${stackName} has the following stack dependencies:`,
