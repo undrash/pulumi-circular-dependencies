@@ -77,13 +77,9 @@ export const getDependency = ({
     `organization/dependencies-1/${stack}`,
   );
 
-  console.log('stack exists...');
-
   const output = stackRef.getOutput(property);
 
   return output.apply((v) => {
-    console.log('The output value is:', v);
-
     if (v) return v;
 
     return getPlaceholder(placeholderType, (placeholderValue) => {
