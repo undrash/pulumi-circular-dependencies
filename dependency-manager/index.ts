@@ -1,69 +1,30 @@
-import * as pulumi from '@pulumi/pulumi';
-import * as aws from '@pulumi/aws';
-import * as child_process from 'child_process';
+import { PlaceholderType } from './lib';
+import {
+  dynamoTable,
+  lambda,
+  s3Bucket,
+  snsTopic,
+  snsFifoTopic,
+  sqsQueue,
+  sqsFifoQueue,
+} from './placeholders';
 
-const stackExists = (stackName: string): boolean => {
-  let stdout = child_process.execSync('pulumi stack ls --json').toString();
-
-  let stacks = JSON.parse(stdout);
-
-  for (let stack of stacks) {
-    if (stack.name === stackName) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
-export enum DummyValueType {
-  STRING = 'dummy',
-  ARN = 'arn:aws:dummy',
-  NUMBER = -1337,
-}
-
-export enum Stack {
-  DEP_PROJ_1 = 'dep-proj-1',
-  DEP_PROJ_2 = 'dep-proj-2',
-  DEP_PROJ_3 = 'dep-proj-3',
-}
-
-export const getDependency = ({
-  stack,
-  property,
-  dummyValueType,
-}: {
-  stack: Stack;
-  property: string;
-  dummyValueType?: DummyValueType;
-}) => {
-  if (!dummyValueType) {
-    dummyValueType = DummyValueType.STRING;
-  }
-
-  if (!stackExists(stack)) {
-    pulumi.log.warn(
-      `Stack ${stack} does not exist. Using dummy value '${dummyValueType}' for deployment.`,
-    );
-    pulumi.log.warn(`Please deploy '${stack}' and try again.`);
-
-    return pulumi.output(dummyValueType);
-  }
-
-  const stackRef = new pulumi.StackReference(
-    `organization/dependencies-1/${stack}`,
-  );
-
-  const output = stackRef.getOutput(property);
-
-  return output.apply((v) => {
-    if (v === undefined) {
-      pulumi.log.warn(
-        `Stack '${stack}' dependency '${property}' could not be resolved. Using dummy '${dummyValueType}' value for deployment.`,
-      );
-      pulumi.log.warn(`Please deploy '${stack}' and try again.`);
-      return dummyValueType;
-    }
-    return v;
-  });
+export const placeholders = {
+  [PlaceholderType.DynamoTableName]: dynamoTable.name,
+  [PlaceholderType.DynamoTableArn]: dynamoTable.arn,
+  [PlaceholderType.DynamoTableStreamArn]: dynamoTable.streamArn,
+  [PlaceholderType.LambdaName]: lambda.name,
+  [PlaceholderType.LambdaArn]: lambda.arn,
+  [PlaceholderType.S3BucketName]: s3Bucket.id,
+  [PlaceholderType.S3BucketArn]: s3Bucket.arn,
+  [PlaceholderType.SNSTopicName]: snsTopic.name,
+  [PlaceholderType.SNSTopicArn]: snsTopic.arn,
+  [PlaceholderType.SNSFifoTopicName]: snsFifoTopic.name,
+  [PlaceholderType.SNSFifoTopicArn]: snsFifoTopic.arn,
+  [PlaceholderType.SQSQueueName]: sqsQueue.name,
+  [PlaceholderType.SQSQueueArn]: sqsQueue.arn,
+  [PlaceholderType.SQSQueueUrl]: sqsQueue.url,
+  [PlaceholderType.SQSFifoQueueName]: sqsFifoQueue.name,
+  [PlaceholderType.SQSFifoQueueArn]: sqsFifoQueue.arn,
+  [PlaceholderType.SQSFifoQueueUrl]: sqsFifoQueue.url,
 };
