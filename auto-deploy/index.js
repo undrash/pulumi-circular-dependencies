@@ -14,9 +14,10 @@ const stacks = [
     stackName: 'dep-proj-3',
   },
 ];
-let deployedStacks = [];
 
-function deployStack(dir, stackName) {
+const deployedStacks = [];
+
+const deployStack = (dir, stackName) => {
   // If the stack is already deployed, return
   if (deployedStacks.includes(stackName)) {
     return;
@@ -27,6 +28,9 @@ function deployStack(dir, stackName) {
   const pulumiUpOutput = child_process
     .execSync(`pulumi up -C ../${dir}/ --stack ${stackName} --yes --json`)
     .toString();
+
+  // Add the stack to the list of deployed stacks
+  deployedStacks.push(stackName);
 
   // Extract stack dependencies from the warning messages
   const stackDependencies = [];
@@ -58,15 +62,12 @@ function deployStack(dir, stackName) {
   child_process
     .execSync(`pulumi up -C ../${dir}/ --stack ${stackName} --yes --json`)
     .toString();
+};
 
-  // Add the stack to the list of deployed stacks
-  deployedStacks.push(stackName);
-}
-
-function deployStacks() {
+const deployStacks = () => {
   for (const { dir, stackName } of stacks) {
     deployStack(dir, stackName);
   }
-}
+};
 
 deployStacks();
