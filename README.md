@@ -9,6 +9,7 @@ The imported dependencies can be used like so:
 const value = getDependency({
   stack: 'name-of-stack'
   property: 'yourPropertyExportedFromStack',
+  type: ImportType.String,
 });
 
 ```
