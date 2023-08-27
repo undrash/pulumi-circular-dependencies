@@ -1,4 +1,4 @@
-export enum PlaceholderType {
+export enum ImportType {
   String = 'placeholder',
   Number = -1337,
   LambdaName = 'LambdaName',

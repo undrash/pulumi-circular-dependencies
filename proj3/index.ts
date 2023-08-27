@@ -1,22 +1,18 @@
 import * as aws from '@pulumi/aws';
-import {
-  PlaceholderType,
-  Stack,
-  getDependency,
-} from '../dependency-manager/lib';
+import { ImportType, Stack, getDependency } from '../dependency-manager/lib';
 
 // IMPORTS ///////////////////////////////////////////
 
 const importFromProj1 = getDependency({
   stack: Stack.DEP_PROJ_1, // Imported from Project 1
   property: 'exportToProj3',
-  placeholderType: PlaceholderType.String,
+  type: ImportType.String,
 });
 
 const importFromProj2 = getDependency({
   stack: Stack.DEP_PROJ_2, // Imported from Project 2
   property: 'exportToProj3',
-  placeholderType: PlaceholderType.String,
+  type: ImportType.String,
 });
 
 const localParam1ImportedValue = new aws.ssm.Parameter('imported-from-proj1', {

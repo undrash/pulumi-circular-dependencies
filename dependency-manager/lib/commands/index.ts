@@ -1,6 +1,6 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as child_process from 'child_process';
-import { PlaceholderType, Stack } from '../enums';
+import { ImportType, Stack } from '../enums';
 
 const stackExists = (stackName: string): boolean => {
   let stdout = child_process.execSync('pulumi stack ls --json').toString();
@@ -17,15 +17,12 @@ const stackExists = (stackName: string): boolean => {
 };
 
 const getPlaceholder = (
-  placeholderType: PlaceholderType,
+  type: ImportType,
   customError: (placeholderValue: string) => void,
 ) => {
-  if (
-    placeholderType === PlaceholderType.String ||
-    placeholderType === PlaceholderType.Number
-  ) {
-    customError(placeholderType as string);
-    return pulumi.output(placeholderType);
+  if (type === ImportType.String || type === ImportType.Number) {
+    customError(type as string);
+    return pulumi.output(type);
   }
 
   const stackRef = new pulumi.StackReference(
@@ -37,15 +34,15 @@ const getPlaceholder = (
   return placeholdersStackOutput.apply((placeholders) => {
     if (placeholders == null) {
       throw new Error(
-        'Could not access placeholders stack output when trying to get dependency fallback.',
+        "Could not access 'placeholders' stack output when trying to get dependency fallback. Make sure the 'placeholders' stack is deployed.",
       );
     }
 
-    const placeholder = placeholders[placeholderType];
+    const placeholder = placeholders[type];
 
     if (!placeholder) {
       throw new Error(
-        `Could not find placeholder '${placeholderType}' in 'placeholders' stack.`,
+        `Could not find placeholder '${type}' in 'placeholders' stack.`,
       );
     }
 
@@ -58,14 +55,14 @@ const getPlaceholder = (
 export const getDependency = ({
   stack,
   property,
-  placeholderType,
+  type,
 }: {
   stack: Stack;
   property: string;
-  placeholderType: PlaceholderType;
+  type: ImportType;
 }) => {
   if (!stackExists(stack)) {
-    return getPlaceholder(placeholderType, (placeholderValue) => {
+    return getPlaceholder(type, (placeholderValue) => {
       pulumi.log.warn(
         `Stack ${stack} does not exist. Using placeholder value '${placeholderValue}' for deployment.`,
       );
@@ -82,7 +79,7 @@ export const getDependency = ({
   return output.apply((v) => {
     if (v) return v;
 
-    return getPlaceholder(placeholderType, (placeholderValue) => {
+    return getPlaceholder(type, (placeholderValue) => {
       pulumi.log.warn(
         `Stack '${stack}' dependency '${property}' could not be resolved. Using placeholder '${placeholderValue}' value for deployment.`,
       );
